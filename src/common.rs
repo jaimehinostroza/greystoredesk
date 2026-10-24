@@ -2502,9 +2502,77 @@ fn apply_quicksupport_config() {
     builtin.insert("hide-powered-by-me".to_owned(), "Y".to_owned());
 }
 
+#[cfg(feature = "empresa")]
+fn apply_empresa_config() {
+    const SERVER: &str = "greystorechile.duckdns.org";
+    const KEY: &str = "QOOx8j9xj5m8QarDbkf98Wy1WeAbgevcbR4nXWBzzHA=";
+    *config::APP_NAME.write().unwrap() = "GreyStoreEmpresa".to_owned();
+    {
+        let mut hard = config::HARD_SETTINGS.write().unwrap();
+        // Incoming-only and locked UI. Installation is NOT disabled: Empresa must be
+        // installed so the SYSTEM service runs unattended with full admin on boot.
+        for (k, v) in [
+            ("conn-type", "incoming"),
+            ("disable-settings", "Y"),
+            ("disable-account", "Y"),
+            ("disable-ab", "Y"),
+        ] {
+            hard.insert(k.to_owned(), v.to_owned());
+        }
+    }
+    {
+        let mut overwrite = config::OVERWRITE_SETTINGS.write().unwrap();
+        for (k, v) in [
+            (keys::OPTION_CUSTOM_RENDEZVOUS_SERVER, SERVER),
+            (keys::OPTION_RELAY_SERVER, SERVER),
+            (keys::OPTION_KEY, KEY),
+            // Unattended access: fixed (permanent) password, auto-accept with it, no manual click.
+            (keys::OPTION_VERIFICATION_METHOD, "use-permanent-password"),
+            (keys::OPTION_APPROVE_MODE, "password"),
+            (keys::OPTION_ALLOW_AUTO_UPDATE, "N"),
+            (keys::OPTION_ENABLE_KEYBOARD, "Y"),
+            (keys::OPTION_ENABLE_CLIPBOARD, "Y"),
+            (keys::OPTION_ENABLE_FILE_TRANSFER, "Y"),
+            (keys::OPTION_ENABLE_AUDIO, "Y"),
+            (keys::OPTION_ENABLE_TUNNEL, "Y"),
+            (keys::OPTION_ENABLE_REMOTE_RESTART, "Y"),
+            (keys::OPTION_ENABLE_BLOCK_INPUT, "Y"),
+            (keys::OPTION_ENABLE_TERMINAL, "Y"),
+        ] {
+            overwrite.insert(k.to_owned(), v.to_owned());
+        }
+    }
+    {
+        let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
+        local.insert(keys::OPTION_ENABLE_CHECK_UPDATE.to_owned(), "N".to_owned());
+    }
+    {
+        let mut builtin = config::BUILTIN_SETTINGS.write().unwrap();
+        for (k, v) in [
+            ("hide-powered-by-me", "Y"),
+            (keys::OPTION_REMOVE_PRESET_PASSWORD_WARNING, "Y"),
+            (keys::OPTION_HIDE_SECURITY_SETTINGS, "Y"),
+            (keys::OPTION_HIDE_NETWORK_SETTINGS, "Y"),
+            (keys::OPTION_HIDE_SERVER_SETTINGS, "Y"),
+            (keys::OPTION_HIDE_STOP_SERVICE, "Y"),
+            (keys::OPTION_ALLOW_LOGON_SCREEN_PASSWORD, "Y"),
+            // Settings UI is locked for the client, but the admin can still set the
+            // per-device permanent password from the command line ("--password <pw>").
+            (
+                keys::OPTION_ALLOW_COMMAND_LINE_SETTINGS_WHEN_SETTINGS_DISABLED,
+                "Y",
+            ),
+        ] {
+            builtin.insert(k.to_owned(), v.to_owned());
+        }
+    }
+}
+
 pub fn load_custom_client() {
     #[cfg(feature = "quicksupport")]
     apply_quicksupport_config();
+    #[cfg(feature = "empresa")]
+    apply_empresa_config();
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());

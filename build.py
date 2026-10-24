@@ -140,6 +140,11 @@ def make_parser():
         help='Build GreyStore QuickSupport (incoming-only, preset server)'
     )
     parser.add_argument(
+        '--empresa',
+        action='store_true',
+        help='Build GreyStore Empresa (installed, unattended, fixed password, preset server)'
+    )
+    parser.add_argument(
         '--unix-file-copy-paste',
         action='store_true',
         help='Build with unix file copy paste feature'
@@ -329,6 +334,8 @@ def get_features(args):
         features.append('unix-file-copy-paste')
     if args.quicksupport:
         features.append('quicksupport')
+    if args.empresa:
+        features.append('empresa')
     if args.drm:
         # Say so rather than quietly handing back a stock build: the backend is Linux-only, so on
         # any other host the flag cannot be honoured and the resulting binary would look like a

@@ -48,6 +48,8 @@ unix-file-copy-paste = [
 screencapturekit = ["cpal/screencapturekit"]
 # GreyStore QuickSupport: incoming-only portable build preset to the GreyStore server
 quicksupport = []
+# GreyStore Empresa: installed unattended build (fixed per-device password) preset to the GreyStore server
+empresa = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
