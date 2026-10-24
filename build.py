@@ -135,6 +135,11 @@ def make_parser():
         help='Build windows portable'
     )
     parser.add_argument(
+        '--quicksupport',
+        action='store_true',
+        help='Build GreyStore QuickSupport (incoming-only, preset server)'
+    )
+    parser.add_argument(
         '--unix-file-copy-paste',
         action='store_true',
         help='Build with unix file copy paste feature'
@@ -322,6 +327,8 @@ def get_features(args):
         features.append('flutter')
     if args.unix_file_copy_paste:
         features.append('unix-file-copy-paste')
+    if args.quicksupport:
+        features.append('quicksupport')
     if args.drm:
         # Say so rather than quietly handing back a stock build: the backend is Linux-only, so on
         # any other host the flag cannot be honoured and the resulting binary would look like a

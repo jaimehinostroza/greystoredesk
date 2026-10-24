@@ -2459,7 +2459,39 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
     ThrottledInterval::new(i)
 }
 
+#[cfg(feature = "quicksupport")]
+fn apply_quicksupport_config() {
+    const SERVER: &str = "greystorechile.duckdns.org";
+    const KEY: &str = "QOOx8j9xj5m8QarDbkf98Wy1WeAbgevcbR4nXWBzzHA=";
+    *config::APP_NAME.write().unwrap() = "GreyStoreQS".to_owned();
+    let mut hard = config::HARD_SETTINGS.write().unwrap();
+    for (k, v) in [
+        ("conn-type", "incoming"),
+        ("disable-installation", "Y"),
+        ("disable-settings", "Y"),
+        ("disable-account", "Y"),
+        ("disable-ab", "Y"),
+    ] {
+        hard.insert(k.to_owned(), v.to_owned());
+    }
+    let mut overwrite = config::OVERWRITE_SETTINGS.write().unwrap();
+    for (k, v) in [
+        (keys::OPTION_CUSTOM_RENDEZVOUS_SERVER, SERVER),
+        (keys::OPTION_RELAY_SERVER, SERVER),
+        (keys::OPTION_KEY, KEY),
+        (keys::OPTION_ALLOW_AUTO_UPDATE, "N"),
+    ] {
+        overwrite.insert(k.to_owned(), v.to_owned());
+    }
+    config::OVERWRITE_LOCAL_SETTINGS
+        .write()
+        .unwrap()
+        .insert(keys::OPTION_ENABLE_CHECK_UPDATE.to_owned(), "N".to_owned());
+}
+
 pub fn load_custom_client() {
+    #[cfg(feature = "quicksupport")]
+    apply_quicksupport_config();
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
