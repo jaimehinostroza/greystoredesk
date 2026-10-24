@@ -2496,6 +2496,10 @@ fn apply_quicksupport_config() {
     // Same as a "-qs" executable name: start the elevated portable service on launch
     // (one UAC prompt), so admin windows and UAC dialogs can be controlled remotely.
     local.insert("pre-elevate-service".to_owned(), "Y".to_owned());
+    drop(local);
+    // Hide the "Powered by RustDesk" footer in the home window (GreyStore branding).
+    let mut builtin = config::BUILTIN_SETTINGS.write().unwrap();
+    builtin.insert("hide-powered-by-me".to_owned(), "Y".to_owned());
 }
 
 pub fn load_custom_client() {
