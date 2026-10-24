@@ -2480,13 +2480,22 @@ fn apply_quicksupport_config() {
         (keys::OPTION_RELAY_SERVER, SERVER),
         (keys::OPTION_KEY, KEY),
         (keys::OPTION_ALLOW_AUTO_UPDATE, "N"),
+        (keys::OPTION_ENABLE_KEYBOARD, "Y"),
+        (keys::OPTION_ENABLE_CLIPBOARD, "Y"),
+        (keys::OPTION_ENABLE_FILE_TRANSFER, "Y"),
+        (keys::OPTION_ENABLE_AUDIO, "Y"),
+        (keys::OPTION_ENABLE_TUNNEL, "Y"),
+        (keys::OPTION_ENABLE_REMOTE_RESTART, "Y"),
+        (keys::OPTION_ENABLE_BLOCK_INPUT, "Y"),
+        (keys::OPTION_ENABLE_TERMINAL, "Y"),
     ] {
         overwrite.insert(k.to_owned(), v.to_owned());
     }
-    config::OVERWRITE_LOCAL_SETTINGS
-        .write()
-        .unwrap()
-        .insert(keys::OPTION_ENABLE_CHECK_UPDATE.to_owned(), "N".to_owned());
+    let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
+    local.insert(keys::OPTION_ENABLE_CHECK_UPDATE.to_owned(), "N".to_owned());
+    // Same as a "-qs" executable name: start the elevated portable service on launch
+    // (one UAC prompt), so admin windows and UAC dialogs can be controlled remotely.
+    local.insert("pre-elevate-service".to_owned(), "Y".to_owned());
 }
 
 pub fn load_custom_client() {

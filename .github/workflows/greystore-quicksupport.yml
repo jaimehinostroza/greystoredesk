@@ -99,6 +99,8 @@ jobs:
         run: |
           python3 .\build.py --portable --flutter --skip-portable-pack --hwcodec --vram --quicksupport
           mv ./flutter/build/windows/x64/runner/Release ./rustdesk
+          # The app looks itself up as <app-name>.exe (e.g. for the elevated portable service)
+          mv ./rustdesk/rustdesk.exe ./rustdesk/GreyStoreQS.exe
 
       - name: find Runner.res
         continue-on-error: true
@@ -115,7 +117,7 @@ jobs:
           sed -i '/dpiAware/d' res/manifest.xml
           pushd ./libs/portable
           pip3 install -r requirements.txt
-          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/rustdesk.exe
+          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/GreyStoreQS.exe
           popd
           mkdir -p ./SignOutput
           mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/GreyStoreQS-${{ env.VERSION }}-x86_64.exe
